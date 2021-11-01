@@ -11,7 +11,7 @@ interface Result {
 const calculateExercises = (dailyHours: Array<number>, target: number): Result => {
   let result = {
     periodLength: dailyHours.length,
-    trainingDays: dailyHours.map(a => a > 0).length,
+    trainingDays: dailyHours.filter(a => a > 0).length,
     success: false, // raw
     rating: 0, // raw
     ratingDescription: '', // raw
@@ -37,7 +37,27 @@ const calculateExercises = (dailyHours: Array<number>, target: number): Result =
   return result;
 }
 
-console.log(calculateExercises([3, 2, 1, 1.5], 4));
-console.log(calculateExercises([3, 0, 6, 1, 1.5, 0.25, 3], 3));
-console.log(calculateExercises([3, 4, 6, 1, 1.5, 4, 3], 2.5));
+const parseHours = (): { target: number, days: Array<number> } => {
+  if (process.argv.length < 4) throw new Error('Not enough arguments');
+  let allHours=[];
+  for (let i = 2; i < process.argv.length; i++) {
+    const parameter = process.argv[i];
+    if (!isNaN(Number(parameter)))
+      allHours.push(Number(parameter));
+    else
+      throw new Error('Provided values were not numbers!');
+  }
+  return { target: allHours[0], days: allHours.slice(1) };
+}
 
+try {
+  const { target, days } = parseHours();
+  console.log(calculateExercises(days, target));
+}
+catch (error: unknown) {
+  let errorMessage = '';
+  if (error instanceof Error) {
+    errorMessage = ' Error: ' + error.message;
+  }
+  console.log(errorMessage);
+}
