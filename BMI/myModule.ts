@@ -13,3 +13,42 @@ export const calculateBmi = (height: number, weight: number): string => {
   else if (bmi >= 40) return 'Obese (Class III)';
   else return 'Invalid value'; // no case
 };
+
+interface Result {
+  periodLength: number,
+  trainingDays: number,
+  success: boolean,
+  rating: number,
+  ratingDescription: string,
+  target: number,
+  average: number
+}
+
+export const calculateExercises = (dailyHours: Array<number>, target: number): Result => {
+  const result = {
+    periodLength: dailyHours.length,
+    trainingDays: dailyHours.filter(a => a > 0).length,
+    success: false, // raw
+    rating: 0, // raw
+    ratingDescription: '', // raw
+    target,
+    average: dailyHours.reduce((a, b) => a + b) / dailyHours.length
+  };
+  if (result.average >= target) {
+    result.success = true;
+    result.rating = 3;
+    result.ratingDescription = 'good job, you reached your target';
+  }
+  else {
+    result.success = false;
+    if (result.average > target / 2) {
+      result.rating = 2;
+      result.ratingDescription = 'not too bad but could be better';
+    }
+    else {
+      result.rating = 1;
+      result.ratingDescription = 'you were being lazy';
+    }
+  }
+  return result;
+};
