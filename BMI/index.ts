@@ -18,7 +18,7 @@ app.get('/bmi', (request, response) =>
       weight: weight,
       height: height,
       bmi: words
-    })
+    });
   }
   else
     return response.status(401).json({

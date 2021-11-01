@@ -9,7 +9,7 @@ interface Result {
 }
 
 const calculateExercises = (dailyHours: Array<number>, target: number): Result => {
-  let result = {
+  const result = {
     periodLength: dailyHours.length,
     trainingDays: dailyHours.filter(a => a > 0).length,
     success: false, // raw
@@ -17,7 +17,7 @@ const calculateExercises = (dailyHours: Array<number>, target: number): Result =
     ratingDescription: '', // raw
     target,
     average: dailyHours.reduce((a, b) => a + b) / dailyHours.length
-  }
+  };
   if (result.average >= target) {
     result.success = true;
     result.rating = 3;
@@ -35,11 +35,11 @@ const calculateExercises = (dailyHours: Array<number>, target: number): Result =
     }
   }
   return result;
-}
+};
 
 const parseHours = (): { target: number, days: Array<number> } => {
   if (process.argv.length < 4) throw new Error('Not enough arguments');
-  let allHours=[];
+  const allHours=[];
   for (let i = 2; i < process.argv.length; i++) {
     const parameter = process.argv[i];
     if (!isNaN(Number(parameter)))
@@ -48,7 +48,7 @@ const parseHours = (): { target: number, days: Array<number> } => {
       throw new Error('Provided values were not numbers!');
   }
   return { target: allHours[0], days: allHours.slice(1) };
-}
+};
 
 try {
   const { target, days } = parseHours();
