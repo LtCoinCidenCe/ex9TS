@@ -1,8 +1,13 @@
 import { v1 as uuid } from 'uuid';
-import { newPatient, NonSensitivePatientData } from '../types';
+import { newPatient, NonSensitivePatientData, Patient } from '../types';
 import patients from '../../data/patients.json';
+import toNewPatientEntry from '../utils';
 
-const patientsData = patients;
+const patientsData: Patient[] = patients.map(object => {
+  const newOne = toNewPatientEntry(object) as Patient;
+  newOne.id = object.id;
+  return newOne;
+});
 
 const getPatients = (): NonSensitivePatientData[] => {
   return patientsData.map(({ id, name, dateOfBirth, gender, occupation }) => ({
@@ -10,15 +15,12 @@ const getPatients = (): NonSensitivePatientData[] => {
   } as NonSensitivePatientData));
 };
 
-const addPatient = ({ name, dateOfBirth, ssn, gender, occupation }: newPatient) => {
+const addPatient = (newPerson: newPatient) => {
+  // this parameter newPerson should be trusted
   const id = uuid();
   const newPatient = {
     id,
-    name,
-    dateOfBirth,
-    ssn,
-    gender,
-    occupation
+    ...newPerson
   };
   
   patientsData.push(newPatient);
