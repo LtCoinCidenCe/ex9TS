@@ -22,7 +22,7 @@ app.get('/bmi', (request, response) =>
     });
   }
   else
-    return response.status(401).json({
+    return response.status(400).json({
       error: "malformatted parameters"
     });
 });
@@ -37,9 +37,9 @@ app.post('/exercises', (request, response) => {
     if (!isNaN(target))
       if (Array.isArray(daily_exercises) && daily_exercises.length > 0 && daily_exercises.every(a => !isNaN(a)))
         return response.json(calculateExercises(daily_exercises, target)); // bingo
-    return response.status(401).json({ error: "malformatted parameters" }); // take charge of two ifs above
+    return response.status(400).json({ error: "malformatted parameters" }); // take charge of two ifs above
   }
-  else return response.status(401).json({ error: "parameters missing" });
+  else return response.status(400).json({ error: "parameters missing" });
 });
 
 const PORT = 3003;
