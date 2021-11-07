@@ -1,4 +1,4 @@
-import { Gender, newPatient } from "./types";
+import { Entry, Gender, newPatient } from "./types";
 
 const isString = (text: unknown): text is string => {
   return typeof text === 'string' || text instanceof String;
@@ -44,16 +44,16 @@ const parseGender = (gender: unknown): Gender => {
   return gender;
 };
 
-type Fields = { name: unknown, dateOfBirth: unknown, ssn: unknown, gender: unknown, occupation: unknown };
+type Fields = { name: unknown, dateOfBirth: unknown, ssn: unknown, gender: unknown, occupation: unknown, entries: Entry[] };
 // handles the transformation, also handles exception inside
-const toNewPatientEntry = ({ name, dateOfBirth, ssn, gender, occupation }: Fields): newPatient => {
+const toNewPatientEntry = ({ name, dateOfBirth, ssn, gender, occupation, entries }: Fields): newPatient => {
   const newEntry: newPatient = {
     name: parseName(name),
     dateOfBirth: parseDate(dateOfBirth),
     ssn: parseSSN(ssn),
     gender: parseGender(gender),
     occupation: parseOccupation(occupation),
-    entries: []
+    entries: entries
   };
   
   return newEntry;

@@ -1,6 +1,6 @@
 import { v1 as uuid } from 'uuid';
-import { newPatient, NonSensitivePatientData, Patient } from '../types';
-import patients from '../../data/patients.json';
+import { newPatient, Patient, PublicPatient } from '../types';
+import patients from '../../data/patients';
 import toNewPatientEntry from '../utils';
 
 // raw variable, full information
@@ -11,10 +11,10 @@ const patientsData: Patient[] = patients.map(object => {
 });
 
 // method
-const getPatients = (): NonSensitivePatientData[] => {
+const getPatients = (): PublicPatient[] => {
   return patientsData.map(({ id, name, dateOfBirth, gender, occupation }) => ({
     id, name, dateOfBirth, gender, occupation
-  } as NonSensitivePatientData));
+  } as PublicPatient));
 };
 
 // method
