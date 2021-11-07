@@ -8,6 +8,12 @@ router.get('/', (_request, response) => {
   return response.json(patientService.getPatients());
 });
 
+router.get('/:id', (request, response) => {
+  const p = patientService.getOnePatient(request.params.id);
+  if (!p) return response.status(404).end();
+  else return response.json(p);
+});
+
 router.post('/', (request, response) => {
   try {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
