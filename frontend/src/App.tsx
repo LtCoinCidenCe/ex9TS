@@ -8,6 +8,7 @@ import { useStateValue } from "./state";
 import { Patient } from "./types";
 
 import PatientListPage from "./PatientListPage";
+import PatientInfoPage from "./PatientInfoPage";
 
 const App = () => {
   const [, dispatch] = useStateValue();
@@ -16,6 +17,7 @@ const App = () => {
 
     const fetchPatientList = async () => {
       try {
+        // patientListFromApi is the variable
         const { data: patientListFromApi } = await axios.get<Patient[]>(
           `${apiBaseUrl}/patients`
         );
@@ -37,8 +39,13 @@ const App = () => {
           </Button>
           <Divider hidden />
           <Switch>
-            <Route path="/">
+            <Route exact path="/">
               <PatientListPage />
+            </Route>
+          </Switch>
+          <Switch>
+            <Route path="/patients/:id">
+              <PatientInfoPage />
             </Route>
           </Switch>
         </Container>
