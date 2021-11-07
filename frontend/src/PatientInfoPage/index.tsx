@@ -9,7 +9,7 @@ import { apiBaseUrl } from '../constants';
 const PatientInfoPage = () =>
 {
   const { id } = useParams<{ id: string }>(); // the generic type is the return value's type
-  const [{ patients }, dispatch] = useStateValue();
+  const [{ patients, diagnoses }, dispatch] = useStateValue();
   let p: Patient | null = null; // for displaying
   const [notFound, setNotFound] = useState<boolean>(false); // it corrently resets
 
@@ -79,7 +79,7 @@ const PatientInfoPage = () =>
         (<div key={en.id}>
           <div>{en.date} {en.description}</div>
           <ul>
-            {en.diagnosisCodes?.map(code => <li key={code}>{code}</li>)}
+            {en.diagnosisCodes?.map(code => <li key={code}>{code} {diagnoses.find(d => d.code === code)?.name}</li>)}
           </ul>
         </div>))
         }
