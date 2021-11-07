@@ -73,6 +73,17 @@ const PatientInfoPage = () =>
       <div>birthday: {p.dateOfBirth}</div>
       <div>ssn: {p.ssn}</div>
       <div>occupation: {p.occupation}</div>
+      <Header as="h3">entries</Header>
+      <div>
+        {p.entries.map(en =>
+        (<div key={en.id}>
+          <div>{en.date} {en.description}</div>
+          <ul>
+            {en.diagnosisCodes?.map(code => <li key={code}>{code}</li>)}
+          </ul>
+        </div>))
+        }
+      </div>
     </div>;
   }
   else if (notFound)
