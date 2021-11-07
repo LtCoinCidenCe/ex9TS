@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Header, Icon } from "semantic-ui-react";
-import { useStateValue } from "../state";
+import { updatePatient, useStateValue } from "../state";
 import { useParams } from "react-router-dom";
 import axios, { AxiosError } from "axios";
 import { Gender, Patient } from "../types";
@@ -35,7 +35,7 @@ const PatientInfoPage = () =>
         .then(({ data }) =>
         {
           // console.log('update');
-          dispatch({ type: "UPDATE_PATIENT", payload: data });
+          dispatch(updatePatient(data));
         })
         .catch((e: AxiosError) =>
         {
