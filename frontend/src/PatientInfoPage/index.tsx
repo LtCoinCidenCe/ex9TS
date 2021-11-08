@@ -3,11 +3,12 @@ import { Header, Icon, Button } from "semantic-ui-react";
 import { updatePatient, useStateValue } from "../state";
 import { useParams } from "react-router-dom";
 import axios, { AxiosError } from "axios";
-import { assertNever, Gender, HospitalEntry, Patient } from "../types";
+import { assertNever, Gender, HospitalEntry, OccupationalHealthcareEntry, Patient } from "../types";
 import { apiBaseUrl } from '../constants';
 import EntryDisplay from "../components/EntryDisplay";
 import { AddHealthEntryModal, HealthCheckEntryFormValues } from "../AddEntryModal/AddHealthEntryModal";
 import { AddHospitalEntryModal, HospitalEntryFormValues } from "../AddEntryModal/AddHospitalEntryModal";
+import { AddOccupationalEntryModal, OccupationalEntryFormValues } from "../AddEntryModal/AddOccupationalModal";
 
 const PatientInfoPage = () =>
 {
@@ -18,6 +19,50 @@ const PatientInfoPage = () =>
 
   // new patient entry
   const [error, setError] = React.useState<string | undefined>();
+
+  const [modalOccupational, setModalOccupational] = React.useState<boolean>(false);
+  const openModalOccupational = () => setModalOccupational(true);
+  const closeModalOccupational = () => {
+    setModalOccupational(false);
+    setError(undefined);
+  };
+  const submitNewOccupationalEntry = async (values: OccupationalEntryFormValues) => {
+    try
+    {
+      const rawCodes = values.diagnosisCodes.replaceAll(' ', '').split(',');
+      const modified: Omit<OccupationalHealthcareEntry, 'id'> = {
+        specialist: values.specialist,
+        date: values.date,
+        description: values.description,
+        type: "OccupationalHealthcare",
+        diagnosisCodes: rawCodes,
+        employerName: values.employerName,
+        sickLeave: {
+          startDate: values.startDate,
+          endDate: values.endDate
+        }
+      };
+      const { data } = await axios.post<Patient>(
+        `${apiBaseUrl}/patients/${id}/entries`,
+        modified
+      );
+      console.log(data);
+      dispatch(updatePatient(data));
+      closeModalOccupational();
+    }
+    catch (error: unknown)
+    {
+      if (axios.isAxiosError(error) && error.response)
+      {
+        console.error(error.response.data);
+        setError(error.response.data);
+      }
+      else
+      {
+        setError('Something went wrong.');
+      }
+    }
+  };
 
   const [modalHospitalOpen, setModalHospitalOpen] = React.useState<boolean>(false);
   const openModalHospital = () => setModalHospitalOpen(true);
@@ -159,7 +204,7 @@ const PatientInfoPage = () =>
 
       <Button onClick={() => openModalHealthyCheck()}>Add New Health Check Entry</Button>
       <Button onClick={() => openModalHospital()}>Add New Hospital Entry</Button>
-      {/* <Button onClick={() => openModalHealthyCheck()}>Add New Health Check Entry</Button> */}
+      <Button onClick={() => openModalOccupational()}>Add New Occupational Modal Entry</Button>
 
       <div>
         {p.entries.map(en => <EntryDisplay key={en.id} entry={en} />)}
@@ -175,6 +220,12 @@ const PatientInfoPage = () =>
         onSubmit={submitNewHospitalEntry}
         error={error}
         onClose={closeModalHospital}
+      />
+      <AddOccupationalEntryModal
+        modalOpen={modalOccupational}
+        onSubmit={submitNewOccupationalEntry}
+        error={error}
+        onClose={closeModalOccupational}
       />
     </div>;
   }

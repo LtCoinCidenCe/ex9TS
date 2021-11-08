@@ -29,13 +29,6 @@ const addPatient = (newPerson: newPatient) => {
   return newPatient;
 };
 
-// const addEntry = (patientID: string, entry: Entry) => {
-//   const p = patientsData.find(p => p.id === patientID);
-//   if (!p) return 'notfound';
-//   p.entries.push(entry);
-//   return p;
-// };
-
 export default {
   getPatients,
   getOnePatient,

@@ -62,6 +62,7 @@ const EntryDisplay = ({ entry }: { entry: Entry }) =>
       return <Segment>
         <Header>{entry.date}<Icon name={typeToIcon(entry.type)}/></Header>
         <div style={{ fontWeight: "bold" }}>employer: {entry.employerName}</div>
+        {entry.sickLeave ? <div style={{ fontWeight: "bold" }}>sick leave: from {entry.sickLeave?.startDate} to {entry.sickLeave?.endDate}</div> : null}
         <p><i>{entry.description}</i></p>
         {diagnosisCodes()}
       </Segment>;

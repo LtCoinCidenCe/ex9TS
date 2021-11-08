@@ -91,7 +91,7 @@ const isDiagnosisCode = (DC: unknown): DC is string =>
 {
   if (DC && isString(DC))
     return codes.includes(DC);
-  throw new Error('Incorrect diagnosis code');
+  return false;
 };
 
 const parseDiagnosisCodes = (diagnosisCodes: unknown): string[] | undefined =>
