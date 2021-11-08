@@ -1,43 +1,43 @@
 import React from "react";
 import { Field, Formik, Form } from "formik";
 import { Button, Grid, Modal, Segment } from 'semantic-ui-react';
-import { NumberField, TextField } from "../AddPatientModal/FormField";
+import { TextField } from "../AddPatientModal/FormField";
 
 interface ModalProps
 {
   modalOpen: boolean;
   onClose: () => void;
-  onSubmit: (values: HealthCheckEntryFormValues) => void;
+  onSubmit: (values: HospitalEntryFormValues) => void;
   error?: string;
 }
 
-export const AddEntryModal = ({ modalOpen, onClose, onSubmit, error }: ModalProps) =>
+export const AddHospitalEntryModal = ({ modalOpen, onClose, onSubmit, error }: ModalProps) =>
 {
   return <Modal open={modalOpen} onClose={onClose} centered={false} closeIcon>
-    <Modal.Header>Add a new health check entry</Modal.Header>
+    <Modal.Header>Add a new hospital check entry</Modal.Header>
     <Modal.Content>
       {error ? <Segment inverted color="red">{error}</Segment> : null}
-      <AddHealthEntryForm onSubmit={onSubmit} onCancel={onClose} />
+      <AddHospitalEntryForm onSubmit={onSubmit} onCancel={onClose} />
     </Modal.Content>
   </Modal>;
 };
 
-export type HealthCheckEntryFormValues = {
-  healthCheckRating: number;
+export type HospitalEntryFormValues = {
   description: string;
   date: string;
   specialist: string;
   diagnosisCodes: string;
+  dischargeDate: string;
+  dischargeCriteria: string;
 };
 
 interface FormProps
 {
-  onSubmit: (values: HealthCheckEntryFormValues) => void;
+  onSubmit: (values: HospitalEntryFormValues) => void;
   onCancel: () => void;
 }
 
-// HealthCheckRatingEntry
-const AddHealthEntryForm = ({ onSubmit, onCancel }: FormProps) =>
+const AddHospitalEntryForm = ({ onSubmit, onCancel }: FormProps) =>
 {
   return (
     <Formik initialValues={{
@@ -45,7 +45,8 @@ const AddHealthEntryForm = ({ onSubmit, onCancel }: FormProps) =>
       date: "",
       specialist: "",
       diagnosisCodes: "",
-      healthCheckRating: 0
+      dischargeDate: "",
+      dischargeCriteria: ""
     }}
       onSubmit={onSubmit}
       validate={(values) =>
@@ -58,8 +59,10 @@ const AddHealthEntryForm = ({ onSubmit, onCancel }: FormProps) =>
           errors.date = requiredError;
         if (!values.specialist)
           errors.specialist = requiredError;
-        if (![0, 1, 2, 3].includes(values.healthCheckRating))
-          errors.healthCheckRating = "Field is invalid";
+        if (!values.dischargeDate)
+          errors.dischargeDate = requiredError;
+        if (!values.dischargeCriteria)
+          errors.dischargeCriteria = requiredError;
         return errors;
       }}
     >
@@ -86,16 +89,22 @@ const AddHealthEntryForm = ({ onSubmit, onCancel }: FormProps) =>
               component={TextField}
             />
             <Field
-              label="DiagnosisCodes"
+              label="Diagnosis Codes"
               placeholder="Seperate codes with ,"
               name="diagnosisCodes"
               component={TextField}
             />
             <Field
-              label="healthCheckRating"
-              placeholder="Health check rating"
-              name="healthCheckRating"
-              component={NumberField}
+              label="Discharge Date"
+              placeholder="YYYY-MM-DD"
+              name="dischargeDate"
+              component={TextField}
+            />
+            <Field
+              label="Discharge Criteria"
+              placeholder="Criteria"
+              name="dischargeCriteria"
+              component={TextField}
             />
             <Grid>
               <Grid.Column floated="left" width={5}>
@@ -120,3 +129,4 @@ const AddHealthEntryForm = ({ onSubmit, onCancel }: FormProps) =>
     </Formik>
   );
 };
+

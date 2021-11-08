@@ -3,10 +3,11 @@ import { Header, Icon, Button } from "semantic-ui-react";
 import { updatePatient, useStateValue } from "../state";
 import { useParams } from "react-router-dom";
 import axios, { AxiosError } from "axios";
-import { assertNever, Gender, Patient } from "../types";
+import { assertNever, Gender, HospitalEntry, Patient } from "../types";
 import { apiBaseUrl } from '../constants';
 import EntryDisplay from "../components/EntryDisplay";
-import { AddEntryModal, HealthCheckEntryFormValues } from "../AddEntryModal/AddEntryModel";
+import { AddHealthEntryModal, HealthCheckEntryFormValues } from "../AddEntryModal/AddHealthEntryModal";
+import { AddHospitalEntryModal, HospitalEntryFormValues } from "../AddEntryModal/AddHospitalEntryModal";
 
 const PatientInfoPage = () =>
 {
@@ -16,17 +17,59 @@ const PatientInfoPage = () =>
   const [notFound, setNotFound] = useState<boolean>(false); // it corrently resets
 
   // new patient entry
-  const [modalOpen, setModalOpen] = React.useState<boolean>(false);
   const [error, setError] = React.useState<string | undefined>();
 
-  const openModal = (): void => setModalOpen(true);
+  const [modalHospitalOpen, setModalHospitalOpen] = React.useState<boolean>(false);
+  const openModalHospital = () => setModalHospitalOpen(true);
+  const closeModalHospital = () => {
+    setModalHospitalOpen(false);
+    setError(undefined);
+  };
+  const submitNewHospitalEntry = async (values: HospitalEntryFormValues) =>
+  {
+    try
+    {
+      const rawCodes = values.diagnosisCodes.replaceAll(' ', '').split(',');
+      const modified: Omit<HospitalEntry, 'id'> = {
+        specialist: values.specialist,
+        date: values.date,
+        description: values.description,
+        type: "Hospital",
+        diagnosisCodes: rawCodes,
+        discharge: { date: values.dischargeDate, criteria: values.dischargeCriteria }
+      };
+      const { data } = await axios.post<Patient>(
+        `${apiBaseUrl}/patients/${id}/entries`,
+        modified
+      );
+      console.log(data);
+      dispatch(updatePatient(data));
+      closeModalHospital();
+    }
+    catch (error: unknown)
+    {
+      if (axios.isAxiosError(error) && error.response)
+      {
+        console.error(error.response.data);
+        setError(error.response.data);
+      }
+      else
+      {
+        setError('Something went wrong.');
+      }
+    }
+  };
 
-  const closeModal = (): void => {
-    setModalOpen(false);
+
+  const [modalHealthyCheckOpen, setModalHealthyCheckOpen] = React.useState<boolean>(false);
+  const openModalHealthyCheck = (): void => setModalHealthyCheckOpen(true);
+
+  const closeModalHealthyCheck = (): void => {
+    setModalHealthyCheckOpen(false);
     setError(undefined);
   };
 
-  const submitNewEntry = async (values: HealthCheckEntryFormValues) => {
+  const submitNewHealthEntry = async (values: HealthCheckEntryFormValues) => {
     try
     {
       const rawCodes = values.diagnosisCodes.replaceAll(' ', '').split(',');
@@ -37,7 +80,7 @@ const PatientInfoPage = () =>
       );
       console.log(data);
       dispatch(updatePatient(data));
-      closeModal();
+      closeModalHealthyCheck();
     }
     catch (error: unknown) {
       if(axios.isAxiosError(error) && error.response) {
@@ -113,15 +156,25 @@ const PatientInfoPage = () =>
       <div>ssn: {p.ssn}</div>
       <div>occupation: {p.occupation}</div>
       <Header as="h3">entries</Header>
-      <Button onClick={() => openModal()}>Add New Health Check Entry</Button>
+
+      <Button onClick={() => openModalHealthyCheck()}>Add New Health Check Entry</Button>
+      <Button onClick={() => openModalHospital()}>Add New Hospital Entry</Button>
+      {/* <Button onClick={() => openModalHealthyCheck()}>Add New Health Check Entry</Button> */}
+
       <div>
         {p.entries.map(en => <EntryDisplay key={en.id} entry={en} />)}
       </div>
-      <AddEntryModal
-        modalOpen={modalOpen}
-        onSubmit={submitNewEntry}
+      <AddHealthEntryModal
+        modalOpen={modalHealthyCheckOpen}
+        onSubmit={submitNewHealthEntry}
         error={error}
-        onClose={closeModal}
+        onClose={closeModalHealthyCheck}
+      />
+      <AddHospitalEntryModal
+        modalOpen={modalHospitalOpen}
+        onSubmit={submitNewHospitalEntry}
+        error={error}
+        onClose={closeModalHospital}
       />
     </div>;
   }
