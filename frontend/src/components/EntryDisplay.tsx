@@ -17,7 +17,7 @@ import { assertNever, Entry, HealthCheckRating } from "../types";
         assertNever(type);
     }
   };
-  
+
   const ratingToColor = (rating: HealthCheckRating) => {
     switch (rating) {
       case HealthCheckRating.CriticalRisk:
@@ -40,7 +40,7 @@ const EntryDisplay = ({ entry }: { entry: Entry }) =>
       {entry.diagnosisCodes?.map(code => <li key={code}>{code} {diagnoses.find(d => d.code === code)?.name}</li>)}
     </ul>;
   };
-  
+
   const [{ diagnoses }] = useStateValue();
   switch (entry.type)
   {

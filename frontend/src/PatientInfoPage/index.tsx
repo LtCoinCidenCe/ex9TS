@@ -1,20 +1,55 @@
 import React, { useEffect, useState } from "react";
-import { Header, Icon } from "semantic-ui-react";
+import { Header, Icon, Button } from "semantic-ui-react";
 import { updatePatient, useStateValue } from "../state";
 import { useParams } from "react-router-dom";
 import axios, { AxiosError } from "axios";
 import { assertNever, Gender, Patient } from "../types";
 import { apiBaseUrl } from '../constants';
 import EntryDisplay from "../components/EntryDisplay";
+import { AddEntryModal, HealthCheckEntryFormValues } from "../AddEntryModal/AddEntryModel";
 
 const PatientInfoPage = () =>
 {
-  const { id } = useParams<{ id: string }>(); // the generic type is the return value's type
+  const { id } = useParams<{ id: string }>(); // the generic type is the returned value's type
   const [{ patients }, dispatch] = useStateValue();
   let p: Patient | null = null; // for displaying
   const [notFound, setNotFound] = useState<boolean>(false); // it corrently resets
 
-  // console.log('notFound:',notFound);
+  // new patient entry
+  const [modalOpen, setModalOpen] = React.useState<boolean>(false);
+  const [error, setError] = React.useState<string | undefined>();
+
+  const openModal = (): void => setModalOpen(true);
+
+  const closeModal = (): void => {
+    setModalOpen(false);
+    setError(undefined);
+  };
+
+  const submitNewEntry = async (values: HealthCheckEntryFormValues) => {
+    try
+    {
+      const rawCodes = values.diagnosisCodes.replaceAll(' ', '').split(',');
+      const modified = { ...values, type: "HealthCheck", diagnosisCodes: rawCodes };
+      const { data } = await axios.post<Patient>(
+        `${apiBaseUrl}/patients/${id}/entries`,
+        modified
+      );
+      console.log(data);
+      dispatch(updatePatient(data));
+      closeModal();
+    }
+    catch (error: unknown) {
+      if(axios.isAxiosError(error) && error.response) {
+        console.error(error.response.data);
+        setError(error.response.data);
+      }
+      else {
+        setError('Something went wrong.');
+      }
+    }
+  };
+  // new patient entry end
 
   if (Object.prototype.hasOwnProperty.call(patients, id))
   {
@@ -69,7 +104,7 @@ const PatientInfoPage = () =>
         break;
     }
   };
-  
+
   if (p)
   {
     return <div>
@@ -78,9 +113,16 @@ const PatientInfoPage = () =>
       <div>ssn: {p.ssn}</div>
       <div>occupation: {p.occupation}</div>
       <Header as="h3">entries</Header>
+      <Button onClick={() => openModal()}>Add New Health Check Entry</Button>
       <div>
         {p.entries.map(en => <EntryDisplay key={en.id} entry={en} />)}
       </div>
+      <AddEntryModal
+        modalOpen={modalOpen}
+        onSubmit={submitNewEntry}
+        error={error}
+        onClose={closeModal}
+      />
     </div>;
   }
   else if (notFound)

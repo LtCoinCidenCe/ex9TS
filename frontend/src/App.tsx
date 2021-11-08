@@ -27,7 +27,7 @@ const App = () => {
       }
     };
     void fetchPatientList();
-    
+
     const fetchDiagnosesList = async () => {
       try {
         const { data: diagnoses } = await axios.get<Diagnosis[]>(`${apiBaseUrl}/diagnoses`);
