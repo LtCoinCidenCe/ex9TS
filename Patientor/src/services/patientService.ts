@@ -1,14 +1,9 @@
 import { v1 as uuid } from 'uuid';
 import { newPatient, Patient, PublicPatient } from '../types';
 import patients from '../../data/patients';
-import toNewPatientEntry from '../utils';
 
 // raw variable, full information
-const patientsData: Patient[] = patients.map(object => {
-  const newOne = toNewPatientEntry(object) as Patient;
-  newOne.id = object.id;
-  return newOne;
-});
+const patientsData: Patient[] = patients;
 
 // method
 const getPatients = (): PublicPatient[] => {
@@ -33,6 +28,13 @@ const addPatient = (newPerson: newPatient) => {
   patientsData.push(newPatient);
   return newPatient;
 };
+
+// const addEntry = (patientID: string, entry: Entry) => {
+//   const p = patientsData.find(p => p.id === patientID);
+//   if (!p) return 'notfound';
+//   p.entries.push(entry);
+//   return p;
+// };
 
 export default {
   getPatients,

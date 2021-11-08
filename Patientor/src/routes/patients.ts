@@ -1,6 +1,6 @@
 import express from 'express';
 import patientService from '../services/patientService';
-import toNewPatientEntry from '../utils';
+import { toNewPatientEntry, toNewDEntry } from '../utils';
 
 const router = express.Router();
 
@@ -24,6 +24,24 @@ router.post('/', (request, response) => {
   catch (error: unknown) {
     if (error instanceof Error)
       return response.status(400).send(error.message);
+    return response.status(400).end();
+  }
+});
+
+router.post('/:id/entries', (request, response) => {
+  const p = patientService.getOnePatient(request.params.id);
+  if (!p) return response.status(404).end();
+  try
+  {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+    const newDEntry = toNewDEntry(request.body);
+    p.entries.push(newDEntry); // weird operation
+    return response.status(201).json(p);
+  }
+  catch (e: unknown)
+  {
+    if (e instanceof Error)
+      return response.status(400).send(e.message);
     return response.status(400).end();
   }
 });
